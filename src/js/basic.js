@@ -1,29 +1,23 @@
 export default function orderByProps(obj, rule) {
-  const newObj = obj;
+  const newObj = { ...obj };
   const result = [];
 
   for (const prop in rule) {
-    if (rule.length !== 0) {
-      for (const i in newObj) {
-        if (i === rule[prop]) {
-          result.push({ key: i, value: newObj[i] });
-          delete newObj[i];
-        }
-      }
+    if (Object.prototype.hasOwnProperty.call(newObj, rule[prop])) {
+      result.push({ key: rule[prop], value: obj[rule[prop]] });
+      delete newObj[rule[prop]];
+    } else {
+      throw new Error(`Пераметр ${rule[prop]} не существет`);
     }
   }
 
-  const sorted = Object.keys(newObj).sort().reduce((object, key) => {
-    const output = { ...object };
-    output[key] = newObj[key];
-    return output;
-  }, {});
+  const sorted = Object.keys(newObj);
 
-  for (const prop in sorted) {
-    if (sorted.length !== 0) {
-      result.push({ key: prop, value: sorted[prop] });
-    }
+  if (sorted.length > 0) {
+    sorted.sort();
+    sorted.forEach((item) => {
+      result.push({ key: item, value: obj[item] });
+    });
   }
-
   return result;
 }
